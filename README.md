@@ -6,7 +6,7 @@
 ![Counter](https://img.shields.io/badge/Counter-64--bit-purple.svg)
 ![Status](https://img.shields.io/badge/Status-Synthesizable-brightgreen.svg)
 
-This repository contains a 64-bit Timer IP Core with APB Slave interface, customized based on the RISC-V CLINT (Core Local Interruptor) specification. The IP supports configurable counting speeds, hardware maskable level-interrupts, and debug mode halting.
+This repository contains a 64-bit Timer IP Core with an APB4 Slave interface, customized based on the RISC-V CLINT (Core Local Interruptor) specification. The IP requires PSTRB support (byte-strobe write enable) for byte-level register access, and is therefore APB4-only — it is not compatible with APB3 masters, which do not implement the PSTRB signal. The IP also supports configurable counting speeds, hardware maskable level-interrupts, and debug mode halting.
 
 ---
 
