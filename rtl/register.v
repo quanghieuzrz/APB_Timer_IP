@@ -234,10 +234,10 @@ begin
 end
 
 //thcsr
-assign interrupt = int_en & int_st;   // fix: dng gi tr  registered, trnh glitch t hp
+assign interrupt = int_en & int_st;   
 
-wire halt_req_tmp;   // fix: khai bo r rng
-wire halt_ack;        // fix: khai bo r rng
+wire halt_req_tmp;   
+wire halt_ack;        
 wire halt_ack_tmp;
 reg [31:0] thcsr;
 wire [31:0] thcsr_tmp;
