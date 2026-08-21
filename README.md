@@ -90,12 +90,6 @@ Base address offset space: 12-bit (`0x000` - `0xFFF`). Reserved registers read a
 
 ---
 
-## References
-
-* RISC-V CLINT Specification: [Chromitem SoC Spec](https://chromitem-soc.readthedocs.io/en/latest/clint.html)
-
----
-
 ## Author
 
 **Hieu Bui**
