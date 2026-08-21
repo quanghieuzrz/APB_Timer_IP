@@ -182,13 +182,35 @@ This model does **not** implement register read/write decoding, interrupt logic,
 
 ---
 
-## Golden Model (Course Deliverable)
+---
 
-Per project requirements, a full golden model will be provided by the instructor once functional coverage reaches:
-- **Standard level:** ≥ 60% coverage
-- **Advanced level:** ≥ 80% coverage
+## Verification: Golden Reference Model
 
-This golden model is used as a final bug-finding check before certification, and is separate from the `golden_test` reference counter described above. See the instructions inside the `sim/` folder (README provided by the instructor) for how to run it.
+The testbench (`tb/test_bench.v`) includes a reference counter model, `golden_test`, used to automatically cross-check the DUT's 64-bit counter value against an independently modeled expected value.
+
+**Module interface (`golden_test`):**
+
+| Signal | Direction | Description |
+|---|---|---|
+| `clk`, `rst_n` | Input | Shared with the DUT |
+| `psel`, `penable`, `pwrite`, `paddr`, `pwdata` | Input | Shared APB bus signals, connected via wildcard port (`.*`) to the same testbench drivers used by `timer_top` |
+| `dbg_mode` | Input | Shared debug mode signal |
+| `cnt_set` | Input | When asserted, loads `cnt` with `cnt_val` on the next clock edge |
+| `cnt_val` | Input | Value to preload into `cnt` when `cnt_set` is high |
+| `cnt` | Output | 64-bit reference counter value (`golden_cnt` at the testbench level) |
+
+**Behavior:**
+- `timer_en_set` / `timer_en_clr` are derived by decoding a write to `ADDR_TCR` (`12'h0`) with `pwdata[0]` high or low respectively, mirroring the DUT's `timer_en` bit.
+- `halt_set` / `halt_clr` are derived by decoding a write to `ADDR_THCSR` (`12'h1C`) with `pwdata[0]` high or low respectively, mirroring the DUT's `halt_req` bit.
+- Both `timer_en` and `halt_req_reg` are registered on `posedge clk`, then re-registered one more cycle into `timer_en_tmp` and `halt_tmp` before being used to gate counting — this reproduces the DUT's internal timing (register write → effect visible one cycle later) so the reference model stays cycle-accurate with the RTL.
+- The effective halt condition is computed every cycle as `halt_req_reg & dbg_mode`, so it reacts correctly even if `dbg_mode` changes without a new write to `THCSR`.
+- `cnt` increments by 1 each clock cycle only while `timer_en_tmp` is high and `halt_tmp` is low; otherwise it holds its current value. If `cnt_set` is asserted, `cnt` is forced to `cnt_val` instead, overriding normal counting for that cycle.
+
+**Usage from testcases:**
+- `test_bench.set_golden(val)` is a task that pulses `cnt_set` for one clock cycle while driving `cnt_val = val`, used to preload the reference counter to a known starting value (commonly `0` or a randomized value) before a test sequence begins.
+- After driving the DUT through a sequence of APB writes and a number of clock cycles, testcases read back `TDR0`/`TDR1` from the DUT via `apb_rd` and compare the result against `test_bench.golden_cnt` to validate counting speed (including all divider settings) and halt/resume behavior.
+
+**Scope:** `golden_test` only models the 64-bit counter value. It does not implement TCR/TCMP0/TCMP1/TIER/TISR/THCSR register read/write decoding beyond the two fields it needs (`timer_en`, `halt_req`), does not model interrupt generation, PSTRB byte-write behavior, or PSLVERR error responses. It is used specifically by the counter-timing related testcases (`TC_COUNTER`, `TC_COUNTER_CTRL`, `TC_HALT`).
 
 ---
 
