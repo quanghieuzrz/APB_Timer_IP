@@ -1,5 +1,11 @@
 # APB 32-Bit Timer IP
 
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Language](https://img.shields.io/badge/Language-Verilog%202001-blue.svg)
+![Bus Interface](https://img.shields.io/badge/Bus%20Interface-APB3%2FAPB4-orange.svg)
+![Counter](https://img.shields.io/badge/Counter-64--bit-purple.svg)
+![Status](https://img.shields.io/badge/Status-Synthesizable-brightgreen.svg)
+
 This repository contains a 64-bit Timer IP Core with APB Slave interface, customized based on the RISC-V CLINT (Core Local Interruptor) specification. The IP supports configurable counting speeds, hardware maskable level-interrupts, and debug mode halting.
 
 ---
