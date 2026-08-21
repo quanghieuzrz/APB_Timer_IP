@@ -1,4 +1,4 @@
-# APB 32-Bit Timer IP
+# APB_Timer_IP (64-bit Counter / 32-bit APB Bus)
 
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Language](https://img.shields.io/badge/Language-Verilog-blue.svg)
