@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Language](https://img.shields.io/badge/Language-Verilog-blue.svg)
-![Bus Interface](https://img.shields.io/badge/Bus%20Interface-APB3%2FAPB4-orange.svg)
+![Bus Interface](https://img.shields.io/badge/Bus%20Interface-APB4-orange)
 ![Counter](https://img.shields.io/badge/Counter-64--bit-purple.svg)
 ![Status](https://img.shields.io/badge/Status-Synthesizable-brightgreen.svg)
 
