@@ -1,4 +1,4 @@
-# APB Timer IP Core
+# APB 32-Bit Timer IP
 
 This repository contains a 64-bit Timer IP Core with APB Slave interface, customized based on the RISC-V CLINT (Core Local Interruptor) specification. The IP supports configurable counting speeds, hardware maskable level-interrupts, and debug mode halting.
 
