@@ -166,6 +166,32 @@ An APB error response (`tim_pslverr = 1`) is generated, and **write data is bloc
 | `dbg_mode` | 1 | Input | Debug Mode Input Signal (Does not change after `timer_en` is High) |
 ---
 
+---
+
+## Verification: Internal Golden Reference Model
+
+The testbench (`tb/test_bench.v`) includes a lightweight reference counter model, `golden_test`, used to automatically cross-check the DUT's counter value (`{TDR1, TDR0}`) during simulation. This is **separate from the instructor-provided Golden Model** described below — it is a self-contained checker built into the testbench, not an external verification IP.
+
+**How it works:**
+- `golden_test` mirrors `timer_en` and the halt condition (`halt_req` AND `dbg_mode`) with the same 1-cycle register delay as the DUT (`timer_en_tmp`, `halt_tmp`), so its counting behavior stays cycle-accurate with the RTL.
+- The counter increments only when `timer_en_tmp` is high and `halt_tmp` is low; otherwise it holds its value.
+- Testcases can preload the reference counter to a known value via the `set_golden(val)` task (drives `cnt_set` / `cnt_val`), typically used before enabling the timer so the DUT and reference model start from the same known state.
+- After running for a chosen number of clock cycles, testcases read back `TDR0`/`TDR1` from the DUT and compare against `golden_cnt` to verify counting speed (including divider modes) and halt/resume behavior.
+
+This model does **not** implement register read/write decoding, interrupt logic, PSTRB handling, or error responses — it only tracks the 64-bit counter value. It is a targeted checker for counter-timing testcases (`counter.v`, `counter_ctrl.v`, `halt.v`), not a full-chip golden model.
+
+---
+
+## Golden Model (Course Deliverable)
+
+Per project requirements, a full golden model will be provided by the instructor once functional coverage reaches:
+- **Standard level:** ≥ 60% coverage
+- **Advanced level:** ≥ 80% coverage
+
+This golden model is used as a final bug-finding check before certification, and is separate from the `golden_test` reference counter described above. See the instructions inside the `sim/` folder (README provided by the instructor) for how to run it.
+
+---
+
 ## Author
 
 **Hieu Bui**
