@@ -12,7 +12,7 @@ This repository contains a 64-bit Timer IP Core with an APB4 Slave interface, cu
 
 ## Key Features
 
-* **Bus Interface:** APB Slave interface with 12-bit address space.
+* **Bus Interface:** APB4 Slave interface with 12-bit address space (PSTRB required for byte access).
 * **Counter:** 64-bit up-counter with configurable clock division (up to divide-by-256).
 * **Interrupt:** Level-sensitive, maskable hardware timer interrupt (`tim_int`).
 * **Advanced Features:**
