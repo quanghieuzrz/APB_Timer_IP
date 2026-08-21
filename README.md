@@ -1,7 +1,7 @@
 # APB 32-Bit Timer IP
 
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Language](https://img.shields.io/badge/Language-Verilog%202001-blue.svg)
+![Language](https://img.shields.io/badge/Language-Verilog-blue.svg)
 ![Bus Interface](https://img.shields.io/badge/Bus%20Interface-APB3%2FAPB4-orange.svg)
 ![Counter](https://img.shields.io/badge/Counter-64--bit-purple.svg)
 ![Status](https://img.shields.io/badge/Status-Synthesizable-brightgreen.svg)
