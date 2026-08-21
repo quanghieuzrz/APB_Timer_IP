@@ -28,7 +28,7 @@ task run_test;
             // Normal read must not return PSLVERR.
             test_bench.pslverr_exp = 0;
             test_bench.apb_rd(ADDR_TCR, rdata);
-            test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0100, 32'hFFFF_FFFF);
+            test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0100, 32'hffff_ffff);
         end
 
         // Enable the timer.
@@ -49,7 +49,7 @@ task run_test;
         // Invalid write must not change TCR.
         test_bench.pslverr_exp = 0;
         test_bench.apb_rd(ADDR_TCR, rdata);
-        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         // Changing div_en from 1 to 0 while timer_en = 1 is prohibited.
         test_bench.pslverr_exp = 1;
@@ -66,7 +66,7 @@ task run_test;
         // TCR remains unchanged after the invalid write.
         test_bench.pslverr_exp = 0;
         test_bench.apb_rd(ADDR_TCR, rdata);
-        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         // Changing div_en from 0 to 1 while timer_en = 1 is prohibited.
         test_bench.pslverr_exp = 1;
@@ -83,7 +83,7 @@ task run_test;
         // TCR remains unchanged after the invalid write.
         test_bench.pslverr_exp = 0;
         test_bench.apb_rd(ADDR_TCR, rdata);
-        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         if ((test_bench.err != 0) || (err != 0))
             $display("TEST PSLVERR FAILED");

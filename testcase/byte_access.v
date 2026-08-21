@@ -1,5 +1,5 @@
 task run_test;
-    reg [31:0] task_rdata;
+    reg [31:0] rdata;
 
     begin
         $display("========================================");
@@ -11,32 +11,32 @@ task run_test;
         // --------------------------------------------------------
         $display("*TCR*");
 
-        test_bench.apb_pstrb(ADDR_TCR, 32'hFFFF_F5FF, PSTRB1);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0500, 32'hFFFF_FF00);
+        test_bench.apb_pstrb(ADDR_TCR, 32'hffff_f5ff, PSTRB1);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0500, 32'hffff_ff00);
 
-        test_bench.apb_pstrb(ADDR_TCR, 32'hFFFF_FFFF, PSTRB0);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0503, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_TCR, 32'hffff_ffff, PSTRB0);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0503, 32'hffff_ffff);
 
-        test_bench.apb_pstrb(ADDR_TCR, 32'hFFFF_FF00, PSTRB2);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0503, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_TCR, 32'hffff_ff00, PSTRB2);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0503, 32'hffff_ffff);
 
-        test_bench.apb_pstrb(ADDR_TCR, 32'hFFFF_FF00, PSTRB3);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0503, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_TCR, 32'hffff_ff00, PSTRB3);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0503, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCR, 32'h0000_0002, PSTRB0);
         test_bench.apb_pstrb(ADDR_TCR, 32'h0000_0000, PSTRB0);
 
         test_bench.apb_pstrb(ADDR_TCR, 32'h5555_5555, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0501, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0501, 32'hffff_ffff);
 
-        test_bench.apb_pstrb(ADDR_TCR, 32'hFFFF_FFFF, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0501, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_TCR, 32'hffff_ffff, PSTRB_31_16);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0501, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCR, 32'h0000_0000, PSTRB0);
         test_bench.apb_pstrb(ADDR_TCR, 32'h0000_0000, PSTRB1);
@@ -47,28 +47,28 @@ task run_test;
         $display("*TDR0*");
 
         test_bench.apb_pstrb(ADDR_TDR0, 32'h1111_1111, PSTRB0);
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h0000_0011, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h0000_0011, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TDR0, 32'h2222_2222, PSTRB1);
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h0000_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h0000_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TDR0, 32'h3333_3333, PSTRB2);
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h0033_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h0033_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TDR0, 32'h4444_4444, PSTRB3);
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h4433_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h4433_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TDR0, 32'h5555_5555, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h4433_5555, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h4433_5555, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TDR0, 32'h6666_6666, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h6666_5555, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h6666_5555, 32'hffff_ffff);
 
         // --------------------------------------------------------
         // TDR1
@@ -76,28 +76,28 @@ task run_test;
         $display("*TDR1*");
 
         test_bench.apb_pstrb(ADDR_TDR1, 32'h1111_1111, PSTRB0);
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        test_bench.cmp_data(ADDR_TDR1, task_rdata, 32'h0000_0011, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        test_bench.cmp_data(ADDR_TDR1, rdata, 32'h0000_0011, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TDR1, 32'h2222_2222, PSTRB1);
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        test_bench.cmp_data(ADDR_TDR1, task_rdata, 32'h0000_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        test_bench.cmp_data(ADDR_TDR1, rdata, 32'h0000_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TDR1, 32'h3333_3333, PSTRB2);
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        test_bench.cmp_data(ADDR_TDR1, task_rdata, 32'h0033_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        test_bench.cmp_data(ADDR_TDR1, rdata, 32'h0033_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TDR1, 32'h4444_4444, PSTRB3);
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        test_bench.cmp_data(ADDR_TDR1, task_rdata, 32'h4433_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        test_bench.cmp_data(ADDR_TDR1, rdata, 32'h4433_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TDR1, 32'h5555_5555, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        test_bench.cmp_data(ADDR_TDR1, task_rdata, 32'h4433_5555, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        test_bench.cmp_data(ADDR_TDR1, rdata, 32'h4433_5555, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TDR1, 32'h6666_6666, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        test_bench.cmp_data(ADDR_TDR1, task_rdata, 32'h6666_5555, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        test_bench.cmp_data(ADDR_TDR1, rdata, 32'h6666_5555, 32'hffff_ffff);
 
         // --------------------------------------------------------
         // TCMP0
@@ -105,28 +105,28 @@ task run_test;
         $display("*TCMP0*");
 
         test_bench.apb_pstrb(ADDR_TCMP0, 32'h1111_1111, PSTRB0);
-        test_bench.apb_rd(ADDR_TCMP0, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP0, task_rdata, 32'hFFFF_FF11, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP0, rdata);
+        test_bench.cmp_data(ADDR_TCMP0, rdata, 32'hffff_ff11, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCMP0, 32'h2222_2222, PSTRB1);
-        test_bench.apb_rd(ADDR_TCMP0, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP0, task_rdata, 32'hFFFF_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP0, rdata);
+        test_bench.cmp_data(ADDR_TCMP0, rdata, 32'hffff_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCMP0, 32'h3333_3333, PSTRB2);
-        test_bench.apb_rd(ADDR_TCMP0, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP0, task_rdata, 32'hFF33_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP0, rdata);
+        test_bench.cmp_data(ADDR_TCMP0, rdata, 32'hFF33_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCMP0, 32'h4444_4444, PSTRB3);
-        test_bench.apb_rd(ADDR_TCMP0, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP0, task_rdata, 32'h4433_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP0, rdata);
+        test_bench.cmp_data(ADDR_TCMP0, rdata, 32'h4433_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCMP0, 32'h5555_5555, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_TCMP0, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP0, task_rdata, 32'h4433_5555, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP0, rdata);
+        test_bench.cmp_data(ADDR_TCMP0, rdata, 32'h4433_5555, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCMP0, 32'h6666_6666, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_TCMP0, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP0, task_rdata, 32'h6666_5555, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP0, rdata);
+        test_bench.cmp_data(ADDR_TCMP0, rdata, 32'h6666_5555, 32'hffff_ffff);
 
         // --------------------------------------------------------
         // TCMP1
@@ -134,28 +134,28 @@ task run_test;
         $display("*TCMP1*");
 
         test_bench.apb_pstrb(ADDR_TCMP1, 32'h1111_1111, PSTRB0);
-        test_bench.apb_rd(ADDR_TCMP1, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP1, task_rdata, 32'hFFFF_FF11, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP1, rdata);
+        test_bench.cmp_data(ADDR_TCMP1, rdata, 32'hffff_ff11, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCMP1, 32'h2222_2222, PSTRB1);
-        test_bench.apb_rd(ADDR_TCMP1, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP1, task_rdata, 32'hFFFF_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP1, rdata);
+        test_bench.cmp_data(ADDR_TCMP1, rdata, 32'hffff_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCMP1, 32'h3333_3333, PSTRB2);
-        test_bench.apb_rd(ADDR_TCMP1, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP1, task_rdata, 32'hFF33_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP1, rdata);
+        test_bench.cmp_data(ADDR_TCMP1, rdata, 32'hFF33_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCMP1, 32'h4444_4444, PSTRB3);
-        test_bench.apb_rd(ADDR_TCMP1, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP1, task_rdata, 32'h4433_2211, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP1, rdata);
+        test_bench.cmp_data(ADDR_TCMP1, rdata, 32'h4433_2211, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCMP1, 32'h5555_5555, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_TCMP1, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP1, task_rdata, 32'h4433_5555, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP1, rdata);
+        test_bench.cmp_data(ADDR_TCMP1, rdata, 32'h4433_5555, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCMP1, 32'h6666_6666, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_TCMP1, task_rdata);
-        test_bench.cmp_data(ADDR_TCMP1, task_rdata, 32'h6666_5555, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCMP1, rdata);
+        test_bench.cmp_data(ADDR_TCMP1, rdata, 32'h6666_5555, 32'hffff_ffff);
 
         // --------------------------------------------------------
         // TIER
@@ -163,28 +163,28 @@ task run_test;
         $display("*TIER*");
 
         test_bench.apb_pstrb(ADDR_TIER, 32'h1111_1111, PSTRB0);
-        test_bench.apb_rd(ADDR_TIER, task_rdata);
-        test_bench.cmp_data(ADDR_TIER, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TIER, rdata);
+        test_bench.cmp_data(ADDR_TIER, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TIER, 32'h2222_2222, PSTRB1);
-        test_bench.apb_rd(ADDR_TIER, task_rdata);
-        test_bench.cmp_data(ADDR_TIER, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TIER, rdata);
+        test_bench.cmp_data(ADDR_TIER, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TIER, 32'h3333_3333, PSTRB2);
-        test_bench.apb_rd(ADDR_TIER, task_rdata);
-        test_bench.cmp_data(ADDR_TIER, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TIER, rdata);
+        test_bench.cmp_data(ADDR_TIER, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TIER, 32'h4444_4444, PSTRB3);
-        test_bench.apb_rd(ADDR_TIER, task_rdata);
-        test_bench.cmp_data(ADDR_TIER, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TIER, rdata);
+        test_bench.cmp_data(ADDR_TIER, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TIER, 32'h6666_6666, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_TIER, task_rdata);
-        test_bench.cmp_data(ADDR_TIER, task_rdata, 32'h0000_0000, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TIER, rdata);
+        test_bench.cmp_data(ADDR_TIER, rdata, 32'h0000_0000, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TIER, 32'h7777_7777, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_TIER, task_rdata);
-        test_bench.cmp_data(ADDR_TIER, task_rdata, 32'h0000_0000, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TIER, rdata);
+        test_bench.cmp_data(ADDR_TIER, rdata, 32'h0000_0000, 32'hffff_ffff);
 
         // --------------------------------------------------------
         // TISR: byte/half-word writes that do not include bit 0
@@ -198,39 +198,39 @@ task run_test;
         test_bench.apb_wr(ADDR_TDR1,  32'h0000_0000);
         test_bench.apb_wr(ADDR_TDR0,  32'h0000_000A);
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
-        test_bench.apb_pstrb(ADDR_TISR, 32'hFFFF_FFFF, PSTRB1);
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_TISR, 32'hffff_ffff, PSTRB1);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
-        test_bench.apb_pstrb(ADDR_TISR, 32'hFFFF_FFFF, PSTRB2);
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_TISR, 32'hffff_ffff, PSTRB2);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
-        test_bench.apb_pstrb(ADDR_TISR, 32'hFFFF_FFFF, PSTRB3);
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_TISR, 32'hffff_ffff, PSTRB3);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
-        test_bench.apb_pstrb(ADDR_TISR, 32'hFFFF_FFFF, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_TISR, 32'hffff_ffff, PSTRB_31_16);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         // Move counter away from compare value, then clear int_st.
         test_bench.apb_wr(ADDR_TDR0, 32'h0000_000B);
         test_bench.apb_pstrb(ADDR_TISR, 32'h0000_0001, PSTRB0);
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0000, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0000, 32'hffff_ffff);
 
         test_bench.apb_wr(ADDR_TDR0, 32'h0000_000A);
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         test_bench.apb_wr(ADDR_TDR0, 32'h0000_000B);
         test_bench.apb_pstrb(ADDR_TISR, 32'h0000_0001, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0000, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0000, 32'hffff_ffff);
 
         // --------------------------------------------------------
         // THCSR
@@ -238,32 +238,32 @@ task run_test;
         $display("*THCSR*");
 
         test_bench.apb_pstrb(ADDR_THCSR, 32'h1111_1111, PSTRB0);
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(ADDR_THCSR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_THCSR, 32'h2222_2222, PSTRB1);
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(ADDR_THCSR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_THCSR, 32'h3333_3333, PSTRB2);
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(ADDR_THCSR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_THCSR, 32'h4444_4444, PSTRB3);
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(ADDR_THCSR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_THCSR, 32'h6666_6666, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(ADDR_THCSR, task_rdata, 32'h0000_0000, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h0000_0000, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_THCSR, 32'h7777_7777, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(ADDR_THCSR, task_rdata, 32'h0000_0000, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h0000_0000, 32'hffff_ffff);
 
         if (test_bench.err != 0)
-            $display("Test_result FAILED");
+            $display("TEST BYTE_ACCESS FAILED");
         else
-            $display("Test_result PASSED");
+            $display("TEST BYTE_ACCESS PASSED");
     end
 endtask

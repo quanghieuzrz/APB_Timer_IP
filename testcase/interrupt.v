@@ -1,5 +1,5 @@
 task run_test;
-    reg [31:0] task_rdata;
+    reg [31:0] rdata;
     reg [63:0] cnt;
     reg [63:0] cnt_save;
     reg        err;
@@ -30,8 +30,8 @@ task run_test;
         end
 
         $display("Check interrupt status is 1");
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         // --------------------------------------------------------
         // Reset and run the interrupt test again.
@@ -65,14 +65,14 @@ task run_test;
         end
 
         // Save counter value. Interrupt must not stop counting.
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt_save[31:0] = task_rdata;
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt_save[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt_save[31:0] = rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt_save[63:32] = rdata;
 
         $display("Check interrupt status is 1");
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         // Writing zero to W1C bit must not clear interrupt status.
         $display("Write 0 to interrupt status");
@@ -87,17 +87,17 @@ task run_test;
             err = 1;
         end
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         repeat (256) @(posedge test_bench.clk);
 
         $display("Check counter continues while interrupt is asserted");
 
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt[31:0] = task_rdata;
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt[31:0] = rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt[63:32] = rdata;
 
         if (cnt == cnt_save) begin
             $display("FAILED: Counter stops when interrupt is asserted");
@@ -122,8 +122,8 @@ task run_test;
 
         $display("Check int_st remains 1");
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         // Re-enable output: pending status should assert interrupt again.
         $display("Enable interrupt and check tim_int is asserted");
@@ -152,8 +152,8 @@ task run_test;
             $display("PASSED: Interrupt is cleared by writing int_st = 1");
         end
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0000, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0000, 32'hffff_ffff);
 
         // --------------------------------------------------------
         // Manual interrupt condition: counter equals compare value.
@@ -181,8 +181,8 @@ task run_test;
         // Status bit is set even though output pin is masked.
         $display("Check interrupt status is 1");
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         // Enabling interrupt exposes the already pending interrupt.
         test_bench.apb_wr(ADDR_TIER, 32'h0000_0001);
@@ -210,8 +210,8 @@ task run_test;
             err = 1;
         end
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0001, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         // Remove compare condition, then clear interrupt status.
         $display("Change counter value and clear int_st");
@@ -229,12 +229,12 @@ task run_test;
             $display("PASSED: Interrupt is negated after clear");
         end
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0000_0000, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0000_0000, 32'hffff_ffff);
 
         if ((test_bench.err != 0) || (err != 0))
-            $display("Test_result FAILED");
+            $display("TEST INTERRUPT FAILED");
         else
-            $display("Test_result PASSED");
+            $display("TEST INTERRUPT PASSED");
     end
 endtask

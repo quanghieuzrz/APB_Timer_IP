@@ -1,5 +1,5 @@
 task run_test;
-    reg [31:0] task_rdata;
+    reg [31:0] rdata;
     reg [63:0] cnt;
     reg [63:0] cnt1;
     reg [63:0] exp_value;
@@ -8,6 +8,7 @@ task run_test;
     integer    i;
     integer    j;
     integer    seed;
+    integer    seed2; 
     reg [63:0] cnt_wdata;
 
     begin
@@ -26,28 +27,23 @@ task run_test;
         test_bench.apb_wr(ADDR_TCR, 32'h0000_0001);
 
         // Store counter value before halt request.
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt[31:0] = task_rdata;
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt[31:0] = rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt[63:32] = rdata;
 
         // Request halt while debug mode is low.
         test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
         // halt_ack must remain 0; read value is halt_req = 1.
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(
-            ADDR_THCSR,
-            task_rdata,
-            32'h0000_0001,
-            32'hFFFF_FFFF
-        );
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h0000_0001, 32'hffff_ffff);
 
         // Counter must still increment.
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt1[31:0] = task_rdata;
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt1[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt1[31:0] = rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt1[63:32] = rdata;
 
         if (cnt1 > cnt) begin
             $display("PASSED: Counter runs normally when dbg_mode = 0");
@@ -59,10 +55,10 @@ task run_test;
 
         repeat (256) @(posedge test_bench.clk);
 
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt[31:0] = task_rdata;
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt[31:0] = rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt[63:32] = rdata;
 
         if (cnt > cnt1) begin
             $display("PASSED: Counter continues while halt_req = 1 in normal mode");
@@ -83,34 +79,29 @@ task run_test;
         test_bench.apb_wr(ADDR_TCR,   32'h0000_0001);
 
         // Store counter value before halt request.
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt[31:0] = task_rdata;
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt[31:0] = rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt[63:32] = rdata;
 
         test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
         // halt_req = 1 and halt_ack = 1.
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(
-            ADDR_THCSR,
-            task_rdata,
-            32'h0000_0003,
-            32'hFFFF_FFFF
-        );
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h0000_0003, 32'hffff_ffff);
 
         // Counter must be stopped once halt_ack is asserted.
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt1[31:0] = task_rdata;
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt1[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt1[31:0] = rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt1[63:32] = rdata;
 
         repeat (256) @(posedge test_bench.clk);
 
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt[31:0] = task_rdata;
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt[31:0] = rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt[63:32] = rdata;
 
         if (cnt == cnt1) begin
             $display("PASSED: Counter stops when halt_req = 1 in debug mode");
@@ -131,7 +122,8 @@ task run_test;
 
         seed = $time + $realtime + $stime;
         cnt_wdata[31:0]  = $urandom(seed);
-        cnt_wdata[63:32] = $urandom(seed >> 1);
+        seed2 = seed >> 1;
+        cnt_wdata[63:32] = $urandom(seed2);
 
         test_bench.apb_wr(ADDR_TDR0, cnt_wdata[31:0]);
         test_bench.apb_wr(ADDR_TDR1, cnt_wdata[63:32]);
@@ -145,10 +137,10 @@ task run_test;
 
         test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt[31:0] = task_rdata;
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt[31:0] = rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt[63:32] = rdata;
 
         if (cnt !== test_bench.golden_cnt) begin
             $display("FAILED: Counter mismatch before resume");
@@ -167,10 +159,10 @@ task run_test;
         // Halt again, then compare with the golden model.
         test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt[31:0] = task_rdata;
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt[31:0] = rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt[63:32] = rdata;
 
         if (cnt !== test_bench.golden_cnt) begin
             $display("FAILED: Counter mismatch after resume");
@@ -197,7 +189,8 @@ task run_test;
                 seed = $time + $realtime + $stime + i + j;
 
                 cnt_wdata[31:0]  = $urandom(seed);
-                cnt_wdata[63:32] = $urandom(seed >> 1);
+                seed2 = seed >> 1;
+                cnt_wdata[63:32] = $urandom(seed2);
 
                 test_bench.apb_wr(ADDR_TDR0, cnt_wdata[31:0]);
                 test_bench.apb_wr(ADDR_TDR1, cnt_wdata[63:32]);
@@ -214,10 +207,10 @@ task run_test;
 
                 test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
-                test_bench.apb_rd(ADDR_TDR0, task_rdata);
-                cnt[31:0] = task_rdata;
-                test_bench.apb_rd(ADDR_TDR1, task_rdata);
-                cnt[63:32] = task_rdata;
+                test_bench.apb_rd(ADDR_TDR0, rdata);
+                cnt[31:0] = rdata;
+                test_bench.apb_rd(ADDR_TDR1, rdata);
+                cnt[63:32] = rdata;
 
                 exp_value = cnt_wdata + ((test_bench.golden_cnt - (cnt_wdata * (1 << i))) >> i);
 
@@ -238,10 +231,10 @@ task run_test;
                 // Halt timer again.
                 test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
-                test_bench.apb_rd(ADDR_TDR0, task_rdata);
-                cnt1[31:0] = task_rdata;
-                test_bench.apb_rd(ADDR_TDR1, task_rdata);
-                cnt1[63:32] = task_rdata;
+                test_bench.apb_rd(ADDR_TDR0, rdata);
+                cnt1[31:0] = rdata;
+                test_bench.apb_rd(ADDR_TDR1, rdata);
+                cnt1[63:32] = rdata;
 
                 exp_value = cnt_wdata + ((test_bench.golden_cnt - (cnt_wdata * (1 << i))) >> i);
 
@@ -263,8 +256,8 @@ task run_test;
         test_bench.dbg_mode = 1'b0;
 
         if ((test_bench.err != 0) || (err != 0))
-            $display("Test_result FAILED");
+            $display("TEST HALT FAILED");
         else
-            $display("Test_result PASSED");
+            $display("TEST HALT PASSED");
     end
 endtask

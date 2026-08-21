@@ -31,7 +31,6 @@ parameter ADDR_TISR  = 12'h18;
 parameter ADDR_THCSR = 12'h1C;
 
 //addr
-
 wire [11:0] addr_tmp;
 reg [7:0] reg_en;
 
@@ -52,7 +51,6 @@ always @(*) begin
 end
 
 //timer H->L
-
 reg timer_en_pre;
 
 always @(posedge clk or negedge rst_n)
@@ -63,10 +61,9 @@ begin
         timer_en_pre <= timer_en;
 end
 
-assign timer_en_reset = ~timer_en & timer_en_pre; //timer_en: H->L
+assign timer_en_reset = ~timer_en & timer_en_pre;
 
 //tdr0
-
 wire [31:0] count_low;
 wire [31:0] count_high;
 
@@ -85,16 +82,13 @@ assign tdr0_val[31:24] = (wr_en & reg_en[1]) & pstrb[3] ? wdata[31:24] : count_l
 assign tdr0_nxt = ~timer_en_reset ? tdr0_val : 32'h0;
 
 always @(posedge clk or negedge rst_n) begin
-    if(!rst_n) begin
+    if(!rst_n)
         tdr0_tmp <= 32'h0;
-    end
-    else begin
+    else
         tdr0_tmp <= tdr0_nxt;
-    end
 end
 
 ///tdr1
-
 wire [31:0] tdr1_nxt;
 wire [31:0] tdr1_val;
 reg [31:0] tdr1_tmp;
@@ -107,12 +101,10 @@ assign tdr1_val[31:24] = (wr_en && reg_en[2]) & pstrb[3] ? wdata[31:24] : count_
 assign tdr1_nxt = ~timer_en_reset ? tdr1_val : 32'h0;
 
 always @(posedge clk or negedge rst_n) begin
-    if(!rst_n) begin
+    if(!rst_n)
         tdr1_tmp <= 32'h0;
-    end
-    else begin
+    else
         tdr1_tmp <= tdr1_nxt;
-    end
 end
 
 assign tdr0_wr_sel = (wr_en && reg_en[1]);
@@ -122,41 +114,19 @@ assign wdata_out = tdr0_wr_sel ? tdr0_val:
                    tdr1_wr_sel ? tdr1_val:
                    32'h0;
 
-//tcr timer_en
-
+//tcr timer_en / div_en / div_val  combinational next-state only
 wire timer_en_tmp;
 reg [31:0] tcr;
 
 assign timer_en = tcr[0];
 assign timer_en_tmp = (wr_en & reg_en[0]) & ~pslverr & pstrb[0] ? wdata[0] : timer_en;
 
-always @(posedge clk or negedge rst_n) begin
-    if(!rst_n) begin
-        tcr[0] <= 1'b0;
-    end else begin
-        tcr[0] <= timer_en_tmp;
-    end
-end
-
-//div_en
-
 wire div_en_tmp;
 wire div_en_err;
 
 assign div_en = tcr[1];
 assign div_en_tmp = (wr_en & reg_en[0]) & pstrb[0] & ~pslverr ? wdata[1] : div_en;
-
-assign div_en_err = (wr_en & reg_en[0]) & timer_en & (wdata[1] != div_en) & pstrb[0]; //timer_en = 1, cant change div_en
-
-always @(posedge clk or negedge rst_n) begin
-    if(!rst_n) begin
-        tcr[1] <= 1'b0;
-    end else begin
-        tcr[1] <= div_en_tmp;
-    end
-end
-
-//div_val
+assign div_en_err = (wr_en & reg_en[0]) & timer_en & (wdata[1] != div_en) & pstrb[0];
 
 wire [3:0] div_val_tmp;
 wire div_val_chk;
@@ -164,25 +134,14 @@ wire div_val_err_1;
 wire div_val_err_2;
 
 assign div_val = tcr[11:8];
-
 assign div_val_chk = (wdata[11:8] <= 4'h8) & (wr_en & reg_en[0]) & pstrb[1];
-
 assign div_val_tmp = div_val_chk & ~pslverr ? wdata[11:8] : div_val;
 
 assign div_val_err_1 = (wr_en & reg_en[0]) & pstrb[1] & (wdata[11:8] > 8);
 assign div_val_err_2 = (wr_en & reg_en[0]) & pstrb[1] & (wdata[11:8] != div_val) & timer_en;
 
-always @(posedge clk or negedge rst_n) begin
-    if(!rst_n)
-        tcr[11:8] <= 1'b1;
-    else
-        tcr[11:8] <= div_val_tmp;
-end
-
-//tcr
-
+//tcr  SINGLE driver only (fix: removed conflicting per-bit always blocks)
 wire [31:0] tcr_tmp;
-
 assign tcr_tmp = {20'h0, div_val_tmp, 6'h0, div_en_tmp, timer_en_tmp};
 
 always @(posedge clk or negedge rst_n) begin
@@ -193,7 +152,6 @@ always @(posedge clk or negedge rst_n) begin
 end
 
 //tcmp0
-
 reg [31:0] tcmp0;
 wire [31:0] tcmp0_tmp;
 
@@ -211,7 +169,6 @@ begin
 end
 
 //tcmp1
-
 reg [31:0] tcmp1;
 wire [31:0] tcmp1_tmp;
 
@@ -229,7 +186,6 @@ begin
 end
 
 //tcmp
-
 wire [63:0] tcmp;
 wire tcmp_compare;
 
@@ -237,7 +193,6 @@ assign tcmp = {tcmp1, tcmp0};
 assign tcmp_compare = (tcmp == cnt);
 
 //tier
-
 reg [31:0] tier;
 wire [31:0] tier_tmp;
 wire int_en;
@@ -245,7 +200,6 @@ wire int_en_tmp;
 
 assign int_en = tier[0];
 assign int_en_tmp = (wr_en & reg_en[5]) & pstrb[0] ? wdata[0] : int_en;
-
 assign tier_tmp = {31'h0, int_en_tmp};
 
 always @(posedge clk or negedge rst_n)
@@ -257,7 +211,6 @@ begin
 end
 
 //tisr
-
 wire [31:0] tisr_tmp;
 reg [31:0] tisr;
 wire int_clr;
@@ -265,7 +218,7 @@ wire int_st;
 wire int_st_tmp;
 
 assign int_st = tisr[0];
-assign int_clr = (wr_en & reg_en[6]) & pstrb[0] & (wdata[0] == 1'b1); //write 1 clear int_st
+assign int_clr = (wr_en & reg_en[6]) & pstrb[0] & (wdata[0] == 1'b1);
 assign int_st_tmp = int_clr ? 1'b0 :
                     tcmp_compare ? 1'b1 :
                     int_st;
@@ -281,11 +234,11 @@ begin
 end
 
 //thcsr
+assign interrupt = int_en & int_st;   // fix: dng gi tr  registered, trnh glitch t hp
 
-assign interrupt = int_en_tmp & int_st_tmp;
-
+wire halt_req_tmp;   // fix: khai bo r rng
+wire halt_ack;        // fix: khai bo r rng
 wire halt_ack_tmp;
-wire halt_reg_tmp;
 reg [31:0] thcsr;
 wire [31:0] thcsr_tmp;
 
@@ -306,7 +259,6 @@ end
 assign pslverr = div_val_err_1 | div_val_err_2 | div_en_err;
 
 //read logic
-
 reg [31:0] rdata_tmp;
 always @(*) begin
     if(rd_en) begin

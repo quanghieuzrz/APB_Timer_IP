@@ -1,5 +1,5 @@
 task run_test;
-    reg [31:0] task_rdata;
+    reg [31:0] rdata;
     reg [31:0] expected_data;
     reg [31:0] write_data;
     reg [11:0] reg_addr;
@@ -16,31 +16,31 @@ task run_test;
         // --------------------------------------------------------
         $display("*TCR*");
 
-        test_bench.apb_pstrb(ADDR_TCR, 32'hFFFF_F2FF, PSTRB1);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0200, 32'hFFFF_FF00);
+        test_bench.apb_pstrb(ADDR_TCR, 32'hffff_f2ff, PSTRB1);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0200, 32'hffff_ff00);
 
-        test_bench.apb_pstrb(ADDR_TCR, 32'hFFFF_FFFF, PSTRB0);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0203, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_TCR, 32'hffff_ffff, PSTRB0);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0203, 32'hffff_ffff);
 
         // Bytes 2 and 3 are reserved for TCR.
-        test_bench.apb_pstrb(ADDR_TCR, 32'hFFFF_FFFF, PSTRB2);
-        test_bench.apb_pstrb(ADDR_TCR, 32'hFFFF_FFFF, PSTRB3);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0203, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_TCR, 32'hffff_ffff, PSTRB2);
+        test_bench.apb_pstrb(ADDR_TCR, 32'hffff_ffff, PSTRB3);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0203, 32'hffff_ffff);
 
         // Disable timer and divider before changing TCR fields.
         test_bench.apb_pstrb(ADDR_TCR, 32'h0000_0002, PSTRB0);
         test_bench.apb_pstrb(ADDR_TCR, 32'h0000_0000, PSTRB0);
 
         test_bench.apb_pstrb(ADDR_TCR, 32'h2222_2222, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0202, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0202, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TCR, 32'h2222_2222, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_TCR, task_rdata);
-        test_bench.cmp_data(ADDR_TCR, task_rdata, 32'h0000_0202, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TCR, rdata);
+        test_bench.cmp_data(ADDR_TCR, rdata, 32'h0000_0202, 32'hffff_ffff);
 
         // Reset TCR fields for the following tests.
         test_bench.apb_pstrb(ADDR_TCR, 32'h0000_0000, PSTRB0);
@@ -69,23 +69,23 @@ task run_test;
                 expected_data = expected_data | write_data;
 
                 test_bench.apb_pstrb(reg_addr, write_data, (4'b0001 << i));
-                test_bench.apb_rd(reg_addr, task_rdata);
-                test_bench.cmp_data(reg_addr, task_rdata, expected_data, 32'hFFFF_FFFF);
+                test_bench.apb_rd(reg_addr, rdata);
+                test_bench.cmp_data(reg_addr, rdata, expected_data, 32'hffff_ffff);
             end
 
             // Update lower half word.
             test_bench.apb_pstrb(reg_addr, 32'hAAAA_AAAA, PSTRB_15_0);
             expected_data[15:0] = 16'hAAAA;
 
-            test_bench.apb_rd(reg_addr, task_rdata);
-            test_bench.cmp_data(reg_addr, task_rdata, expected_data, 32'hFFFF_FFFF);
+            test_bench.apb_rd(reg_addr, rdata);
+            test_bench.cmp_data(reg_addr, rdata, expected_data, 32'hffff_ffff);
 
             // Update upper half word.
             test_bench.apb_pstrb(reg_addr, 32'hBBBB_BBBB, PSTRB_31_16);
             expected_data[31:16] = 16'hBBBB;
 
-            test_bench.apb_rd(reg_addr, task_rdata);
-            test_bench.cmp_data(reg_addr, task_rdata, expected_data, 32'hFFFF_FFFF);
+            test_bench.apb_rd(reg_addr, rdata);
+            test_bench.cmp_data(reg_addr, rdata, expected_data, 32'hffff_ffff);
         end
 
         // --------------------------------------------------------
@@ -94,22 +94,22 @@ task run_test;
         $display("*TIER*");
 
         test_bench.apb_pstrb(ADDR_TIER, 32'h1111_1111, PSTRB0);
-        test_bench.apb_rd(ADDR_TIER, task_rdata);
-        test_bench.cmp_data(ADDR_TIER, task_rdata, 32'h1, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TIER, rdata);
+        test_bench.cmp_data(ADDR_TIER, rdata, 32'h1, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TIER, 32'h2222_2222, PSTRB1);
         test_bench.apb_pstrb(ADDR_TIER, 32'h3333_3333, PSTRB2);
         test_bench.apb_pstrb(ADDR_TIER, 32'h4444_4444, PSTRB3);
-        test_bench.apb_rd(ADDR_TIER, task_rdata);
-        test_bench.cmp_data(ADDR_TIER, task_rdata, 32'h1, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TIER, rdata);
+        test_bench.cmp_data(ADDR_TIER, rdata, 32'h1, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TIER, 32'h6666_6666, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_TIER, task_rdata);
-        test_bench.cmp_data(ADDR_TIER, task_rdata, 32'h0, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TIER, rdata);
+        test_bench.cmp_data(ADDR_TIER, rdata, 32'h0, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_TIER, 32'h5555_5555, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_TIER, task_rdata);
-        test_bench.cmp_data(ADDR_TIER, task_rdata, 32'h0, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TIER, rdata);
+        test_bench.cmp_data(ADDR_TIER, rdata, 32'h0, 32'hffff_ffff);
 
         // --------------------------------------------------------
         // TISR: int_st is a W1C bit in byte 0.
@@ -118,62 +118,62 @@ task run_test;
 
         // Create interrupt status: counter equals compare value.
         test_bench.apb_wr(ADDR_TIER,  32'h1);
-        test_bench.apb_wr(ADDR_TCMP0, 32'hFFFF_FFFF);
+        test_bench.apb_wr(ADDR_TCMP0, 32'hffff_ffff);
         test_bench.apb_wr(ADDR_TCMP1, 32'h0000_0000);
         test_bench.apb_wr(ADDR_TDR1,  32'h0000_0000);
-        test_bench.apb_wr(ADDR_TDR0,  32'hFFFF_FFFF);
+        test_bench.apb_wr(ADDR_TDR0,  32'hffff_ffff);
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h1, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h1, 32'hffff_ffff);
 
         // Strobed bytes that do not contain bit 0 cannot clear int_st.
-        test_bench.apb_pstrb(ADDR_TISR, 32'hFFFF_FFFF, PSTRB1);
-        test_bench.apb_pstrb(ADDR_TISR, 32'hFFFF_FFFF, PSTRB2);
-        test_bench.apb_pstrb(ADDR_TISR, 32'hFFFF_FFFF, PSTRB3);
+        test_bench.apb_pstrb(ADDR_TISR, 32'hffff_ffff, PSTRB1);
+        test_bench.apb_pstrb(ADDR_TISR, 32'hffff_ffff, PSTRB2);
+        test_bench.apb_pstrb(ADDR_TISR, 32'hffff_ffff, PSTRB3);
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h1, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h1, 32'hffff_ffff);
 
         // Move counter away from compare value, then clear W1C status.
         test_bench.apb_wr(ADDR_TDR1, 32'h0000_0002);
-        test_bench.apb_pstrb(ADDR_TISR, 32'hFFFF_FFFF, PSTRB0);
+        test_bench.apb_pstrb(ADDR_TISR, 32'hffff_ffff, PSTRB0);
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0, 32'hffff_ffff);
 
         // Trigger again, then clear using lower half-word strobe.
         test_bench.apb_wr(ADDR_TDR1, 32'h0000_0000);
-        test_bench.apb_wr(ADDR_TDR0, 32'hFFFF_FFFF);
+        test_bench.apb_wr(ADDR_TDR0, 32'hffff_ffff);
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h1, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h1, 32'hffff_ffff);
 
         test_bench.apb_wr(ADDR_TDR1, 32'h0000_0002);
         test_bench.apb_pstrb(ADDR_TISR, 32'h0000_0001, PSTRB_15_0);
 
-        test_bench.apb_rd(ADDR_TISR, task_rdata);
-        test_bench.cmp_data(ADDR_TISR, task_rdata, 32'h0, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TISR, rdata);
+        test_bench.cmp_data(ADDR_TISR, rdata, 32'h0, 32'hffff_ffff);
 
         // --------------------------------------------------------
         // THCSR: halt_req is bit 0; other bits are reserved.
         // --------------------------------------------------------
         $display("*THCSR*");
 
-        test_bench.apb_pstrb(ADDR_THCSR, 32'hFFFF_FFFF, PSTRB0);
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(ADDR_THCSR, task_rdata, 32'h1, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_THCSR, 32'hffff_ffff, PSTRB0);
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h1, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_THCSR, 32'hAAAA_AAAA, PSTRB1);
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(ADDR_THCSR, task_rdata, 32'h1, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h1, 32'hffff_ffff);
 
         test_bench.apb_pstrb(ADDR_THCSR, 32'h2222_2222, PSTRB_15_0);
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(ADDR_THCSR, task_rdata, 32'h0, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h0, 32'hffff_ffff);
 
-        test_bench.apb_pstrb(ADDR_THCSR, 32'hFFFF_FFFF, PSTRB_31_16);
-        test_bench.apb_rd(ADDR_THCSR, task_rdata);
-        test_bench.cmp_data(ADDR_THCSR, task_rdata, 32'h0, 32'hFFFF_FFFF);
+        test_bench.apb_pstrb(ADDR_THCSR, 32'hffff_ffff, PSTRB_31_16);
+        test_bench.apb_rd(ADDR_THCSR, rdata);
+        test_bench.cmp_data(ADDR_THCSR, rdata, 32'h0, 32'hffff_ffff);
 
         if (test_bench.err != 0)
             $display("TEST PSTRB FAILED");

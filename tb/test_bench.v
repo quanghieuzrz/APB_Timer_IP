@@ -39,6 +39,11 @@ module test_bench;
     reg        apb_err_penable;
     reg        pready_chk;
 
+    initial begin
+        $dumpfile("wave.vcd");
+        $dumpvars(0, test_bench);
+    end
+
     timer_top u_timer_top (
         .sys_clk      (clk),
         .sys_rst_n    (rst_n),
@@ -62,18 +67,35 @@ module test_bench;
         .*
     );
 
-    // `include "../testcase/aligned.v"       // pass
-    // `include "../testcase/counter.v"       // pass
-    // `include "../testcase/counter_ctrl.v"  // pass
-    // `include "../testcase/default.v"       // pass
-    // `include "../testcase/interrupt.v"     // pass
-    // `include "../testcase/one_hot.v"       // pass
-    // `include "../testcase/future_error.v"  // pass
-    // `include "../testcase/reserved.v"      // pass
-    // `include "../testcase/halt.v"          // pass
-    // `include "../testcase/apb_protocol.v"  // pass
-    // `include "../testcase/pstrerr.v"       // pass
-    // `include "../testcase/pstrb.v"         // pass
+    `ifdef TC_ALIGNED
+    `include "../testcase/aligned.v"
+    `elsif TC_COUNTER
+    `include "../testcase/counter.v"
+    `elsif TC_COUNTER_CTRL
+    `include "../testcase/counter_ctrl.v"
+    `elsif TC_DEFAULT
+    `include "../testcase/default.v"
+    `elsif TC_INTERRUPT
+    `include "../testcase/interrupt.v"
+    `elsif TC_ONE_HOT
+    `include "../testcase/one_hot.v"
+    `elsif TC_RESERVED
+    `include "../testcase/reserved.v"
+    `elsif TC_HALT
+    `include "../testcase/halt.v"
+    `elsif TC_APB_PROTOCOL
+    `include "../testcase/apb_protocol.v"
+    `elsif TC_PSLVERR
+    `include "../testcase/pslverr.v"
+    `elsif TC_PSTRB
+    `include "../testcase/pstrb.v"
+    `elsif TC_BYTE_ACCESS
+    `include "../testcase/byte_access.v"
+    `elsif TC_APB_MULTI
+    `include "../testcase/apb_multiple_access.v"
+    `else
+    `include "../testcase/default.v"
+    `endif
 
     initial begin
         clk = 0;
@@ -87,7 +109,7 @@ module test_bench;
 
     initial begin
         #29;
-        test_case();
+        run_test();
         #25;
         $finish;
     end
@@ -135,17 +157,16 @@ module test_bench;
             $display("FAILED PREADY");
             err = err + 1;
             end
-            wait (pready == 1); // Wait until the APB transfer completes.
+            wait (pready == 1);
             end
 
             #1;
-            // PSLVERR must match the expected response for this transfer.
             if (pslverr !== pslverr_exp) begin
             $display("----------------------------------------------");
             $display("t=%10d. FAILED PSLVERR: expected=%b, actual=%b", $time, pslverr_exp, pslverr);
             $display("----------------------------------------------");
             err = err + 1;
-            end 
+            end
             else if (pslverr_exp) begin
             pslverr_flag = 1;
             end
@@ -182,20 +203,19 @@ module test_bench;
             $display("FAILED PREADY");
             err = err + 1;
             end
-            wait (pready == 1); // Wait until the APB transfer completes.
+            wait (pready == 1);
             end
 
             #1;
             rdata_out = prdata;
             $display("rdata = %h, address = %h", rdata_out, address);
 
-            // PSLVERR must match the expected response for this transfer.
             if (pslverr !== pslverr_exp) begin
             $display("----------------------------------------------");
             $display("t=%10d. FAILED PSLVERR: expected=%b, actual=%b", $time, pslverr_exp, pslverr);
             $display("----------------------------------------------");
             err = err + 1;
-            end 
+            end
             else if (pslverr_exp) begin
             pslverr_flag = 1;
             end
@@ -239,17 +259,16 @@ module test_bench;
             $display("FAILED PREADY");
             err = err + 1;
             end
-            wait (pready == 1); // Wait until the APB transfer completes.
+            wait (pready == 1);
             end
 
              #1;
-            // PSLVERR must match the expected response for this transfer.
             if (pslverr !== pslverr_exp) begin
             $display("----------------------------------------------");
             $display("t=%10d. FAILED PSLVERR: expected=%b, actual=%b", $time, pslverr_exp, pslverr);
             $display("----------------------------------------------");
             err = err + 1;
-            end 
+            end
             else if (pslverr_exp) begin
             pslverr_flag = 1;
             end
@@ -330,15 +349,13 @@ module golden_test (
 
     reg timer_en;
     reg timer_en_tmp;
-    reg halt;
+    reg halt_req_reg;
     reg halt_tmp;
 
     assign timer_en_set = psel & penable & pwrite & (paddr == ADDR_TCR) & pwdata[0];
-
     assign timer_en_clr = psel & penable & pwrite & (paddr == ADDR_TCR) & ~pwdata[0];
 
-    assign halt_set = psel & penable & pwrite & (paddr == ADDR_THCSR) & pwdata[0] & dbg_mode;
-
+    assign halt_set = psel & penable & pwrite & (paddr == ADDR_THCSR) & pwdata[0];
     assign halt_clr = psel & penable & pwrite & (paddr == ADDR_THCSR) & ~pwdata[0];
 
     assign cnt_nxt = cnt_set ? cnt_val :
@@ -356,11 +373,11 @@ module golden_test (
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n)
-            halt <= 1'b0;
+            halt_req_reg <= 1'b0;
         else if (halt_clr)
-            halt <= 1'b0;
+            halt_req_reg <= 1'b0;
         else if (halt_set)
-            halt <= 1'b1;
+            halt_req_reg <= 1'b1;
     end
 
     always @(posedge clk or negedge rst_n) begin
@@ -372,7 +389,7 @@ module golden_test (
         else begin
             cnt          <= cnt_nxt;
             timer_en_tmp <= timer_en;
-            halt_tmp     <= halt;
+            halt_tmp     <= halt_req_reg & dbg_mode;
         end
     end
 

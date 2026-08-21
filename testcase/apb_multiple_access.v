@@ -1,5 +1,5 @@
 task run_test();
-    reg [31:0] task_rdata;
+    reg [31:0] rdata;
     reg        err;
     begin
         err = 0;
@@ -42,10 +42,10 @@ task run_test();
 
         //normal read
         $display("normal read");
-        test_bench.apb_rd( ADDR_TDR0, task_rdata);//read normal
-        test_bench.cmp_data( ADDR_TDR0, task_rdata, 32'h1111_1111, 32'hffff_ffff);
-        test_bench.apb_rd( ADDR_TDR1, task_rdata);//read normal
-        test_bench.cmp_data( ADDR_TDR1, task_rdata, 32'h2222_2222, 32'hffff_ffff);
+        test_bench.apb_rd( ADDR_TDR0, rdata);//read normal
+        test_bench.cmp_data( ADDR_TDR0, rdata, 32'h1111_1111, 32'hffff_ffff);
+        test_bench.apb_rd( ADDR_TDR1, rdata);//read normal
+        test_bench.cmp_data( ADDR_TDR1, rdata, 32'h2222_2222, 32'hffff_ffff);
 
         //normal write
         $display("normal write");
@@ -62,7 +62,7 @@ task run_test();
         @(posedge clk);
         #1;
         test_bench.penable = 1; //access phase
-        wait( pready == 1); //wait accept
+        wait(pready == 1); //wait accept
         #1;
         test_bench.cmp_data( ADDR_TDR0, test_bench.prdata, 32'h3333_3333, 32'hffff_ffff);
         @(posedge clk);
@@ -134,8 +134,8 @@ task run_test();
         test_bench.paddr = 0;
 
         if ( test_bench.err != 0 )
-            $display("Test_result FAILED");
+            $display("TEST APB_MULTIPLE_ACCESS FAILED");
         else
-            $display("Test_result PASSED");
+            $display("TEST APB_MULTIPLE_ACCESS PASSED");
     end
 endtask

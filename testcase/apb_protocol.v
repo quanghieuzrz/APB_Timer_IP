@@ -1,5 +1,5 @@
 task run_test;
-    reg [31:0] task_rdata;
+    reg [31:0] rdata;
 
     begin
         $display("========================================");
@@ -8,8 +8,8 @@ task run_test;
 
         // Normal APB write/read transaction.
         test_bench.apb_wr(ADDR_TDR0, 32'h3333_3333);
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h3333_3333, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h3333_3333, 32'hffff_ffff);
 
         // Invalid write/read: PENABLE is not asserted.
         $display("Check behavior when PENABLE is not asserted");
@@ -19,18 +19,13 @@ task run_test;
         test_bench.apb_err_penable = 0;
 
         // Invalid write must not modify TDR0.
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h3333_3333, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h3333_3333, 32'hffff_ffff);
 
         // The testbench expects invalid read data to be zero.
         test_bench.apb_err_penable = 1;
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(
-            ADDR_TDR0,
-            task_rdata,
-            32'h0000_0000,
-            32'hFFFF_FFFF
-        );
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h0000_0000, 32'hffff_ffff);
         test_bench.apb_err_penable = 0;
 
         // Invalid write/read: PSEL is not asserted.
@@ -41,23 +36,23 @@ task run_test;
         test_bench.apb_err_psel = 0;
 
         // Invalid write must not modify TDR0.
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h3333_3333, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h3333_3333, 32'hffff_ffff);
 
         // The testbench expects invalid read data to be zero.
         test_bench.apb_err_psel = 1;
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h0000_0000, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h0000_0000, 32'hffff_ffff);
         test_bench.apb_err_psel = 0;
 
         // Confirm APB transactions still work after invalid transfers.
         test_bench.apb_wr(ADDR_TDR0, 32'h9999_9999);
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        test_bench.cmp_data(ADDR_TDR0, task_rdata, 32'h9999_9999, 32'hFFFF_FFFF);
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        test_bench.cmp_data(ADDR_TDR0, rdata, 32'h9999_9999, 32'hffff_ffff);
 
         if (test_bench.err != 0)
-            $display("Test_result FAILED");
+            $display("Test APB_PROTOCOL FAILED");
         else
-            $display("Test_result PASSED");
+            $display("Test APB_PROTOCOL PASSED");
     end
 endtask

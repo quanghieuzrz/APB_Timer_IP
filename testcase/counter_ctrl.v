@@ -1,5 +1,5 @@
 task run_test;
-    reg [31:0] task_rdata;
+    reg [31:0] rdata;
     reg [63:0] cnt;
     reg [63:0] exp_value;
     reg [31:0] test_cycle;
@@ -38,11 +38,11 @@ task run_test;
         // Halt timer before reading counter.
         test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt[31:0] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt[31:0] = rdata;
 
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt[63:32] = rdata;
 
         if (cnt !== test_bench.golden_cnt) begin
             $display("----------------------------------------------");
@@ -86,11 +86,11 @@ task run_test;
 
                 test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
-                test_bench.apb_rd(ADDR_TDR0, task_rdata);
-                cnt[31:0] = task_rdata;
+                test_bench.apb_rd(ADDR_TDR0, rdata);
+                cnt[31:0] = rdata;
 
-                test_bench.apb_rd(ADDR_TDR1, task_rdata);
-                cnt[63:32] = task_rdata;
+                test_bench.apb_rd(ADDR_TDR1, rdata);
+                cnt[63:32] = rdata;
 
                 if (cnt !== (test_bench.golden_cnt >> i)) begin
                     $display("----------------------------------------------");
@@ -141,11 +141,11 @@ task run_test;
 
         test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
-        test_bench.apb_rd(ADDR_TDR0, task_rdata);
-        cnt[31:0] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR0, rdata);
+        cnt[31:0] = rdata;
 
-        test_bench.apb_rd(ADDR_TDR1, task_rdata);
-        cnt[63:32] = task_rdata;
+        test_bench.apb_rd(ADDR_TDR1, rdata);
+        cnt[63:32] = rdata;
 
         if (cnt !== test_bench.golden_cnt) begin
             $display("----------------------------------------------");
@@ -193,15 +193,13 @@ task run_test;
 
                 test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
-                test_bench.apb_rd(ADDR_TDR0, task_rdata);
-                cnt[31:0] = task_rdata;
+                test_bench.apb_rd(ADDR_TDR0, rdata);
+                cnt[31:0] = rdata;
 
-                test_bench.apb_rd(ADDR_TDR1, task_rdata);
-                cnt[63:32] = task_rdata;
+                test_bench.apb_rd(ADDR_TDR1, rdata);
+                cnt[63:32] = rdata;
 
-                exp_value = cnt_wdata +
-                    ((test_bench.golden_cnt -
-                      (cnt_wdata * (1 << i))) >> i);
+                exp_value = cnt_wdata + ((test_bench.golden_cnt - (cnt_wdata * (1 << i))) >> i);
 
                 if (cnt !== exp_value) begin
                     $display("----------------------------------------------");
@@ -213,8 +211,7 @@ task run_test;
                 end
                 else begin
                     $display("----------------------------------------------");
-                    $display("t=%0t PASSED: divided random counter matches",
-                             $time);
+                    $display("t=%0t PASSED: divided random counter matches", $time);
                     $display("Expected: %0d", exp_value);
                     $display("Actual:   %0d", cnt);
                     $display("----------------------------------------------");
@@ -256,11 +253,11 @@ task run_test;
 
                 test_bench.apb_wr(ADDR_THCSR, 32'h0000_0001);
 
-                test_bench.apb_rd(ADDR_TDR0, task_rdata);
-                cnt[31:0] = task_rdata;
+                test_bench.apb_rd(ADDR_TDR0, rdata);
+                cnt[31:0] = rdata;
 
-                test_bench.apb_rd(ADDR_TDR1, task_rdata);
-                cnt[63:32] = task_rdata;
+                test_bench.apb_rd(ADDR_TDR1, rdata);
+                cnt[63:32] = rdata;
 
                 if (cnt !== test_bench.golden_cnt) begin
                     $display("----------------------------------------------");
@@ -287,8 +284,8 @@ task run_test;
         end
 
         if ((test_bench.err != 0) || (err != 0))
-            $display("Test_result FAILED");
+            $display("TEST COUNTER_CTRL FAILED");
         else
-            $display("Test_result PASSED");
+            $display("TEST COUNTER_CTRL PASSED");
     end
 endtask

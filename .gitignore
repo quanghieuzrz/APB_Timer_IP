@@ -1,0 +1,21 @@
+# ==== Questa/ModelSim simulation artifacts ====
+sim/work/
+sim/*.log
+sim/*.wlf
+sim/*.ini
+sim/*.dbg
+sim/vsim.dbg/
+sim/transcript
+sim/*.ucdb
+sim/*.vcd
+sim/compile.log
+
+# ==== Coverage reports ====
+sim/coverage/
+
+# ==== OS / editor junk ====
+.DS_Store
+Thumbs.db
+*.swp
+*~
+sim/*.vvp
