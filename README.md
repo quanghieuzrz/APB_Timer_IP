@@ -51,11 +51,11 @@ This repository contains a 64-bit Timer IP Core with APB Slave interface, custom
 
 ## Register Map Summary
 
-Base address offset space: 12-bit (`0x000` - `0xFFF`). Reserved registers read as zero (RAZ) and write-ignored (WI).
+Addresses in the reserved space (`Others`) are RAZ/WI (Read-As-Zero, Write-Ignored).
 
 | Offset | Abbreviation | Register Name | Description |
 | :--- | :--- | :--- | :--- |
-| `0x00` | **TCR** | Timer Control Register | Enable timer, set clock divider |
+| `0x00` | **TCR** | Timer Control Register | Enable timer, clock divider controls |
 | `0x04` | **TDR0** | Timer Data Register 0 | Counter value [31:0] (Lower) |
 | `0x08` | **TDR1** | Timer Data Register 1 | Counter value [63:32] (Upper) |
 | `0x0C` | **TCMP0** | Timer Compare Register 0 | Compare value [31:0] (Lower) |
@@ -63,40 +63,79 @@ Base address offset space: 12-bit (`0x000` - `0xFFF`). Reserved registers read a
 | `0x14` | **TIER** | Timer Interrupt Enable Register | Enable/Disable timer interrupt output |
 | `0x18` | **TISR** | Timer Interrupt Status Register | Pending interrupt status (Write-1-to-Clear) |
 | `0x1C` | **THCSR** | Timer Halt Control Status Register | Debug halt request & acknowledge status |
+| *Others* | **Reserved** | Reserved Space | RAZ / WI |
 
 ---
 
 ## Detailed Register Specifications
 
 ### 1. TCR - Timer Control Register (`0x00`)
-* **Bit [0] (`timer_en`, RW, default: `1'b0`):** Timer enable. 
-  * `0`: Disabled.
-  * `1`: Enabled (starts counting). Transition from High-to-Low resets counter (`TDR0`/`TDR1`) to initial value.
-* **Bit [1] (`div_en`, RW, default: `1'b0`):** Enable clock divider control mode.
-* **Bits [11:8] (`div_val`, RW, default: `4'b0001`):** Clock division value selector ($2^N$ division up to 256).
-  * *Note:* Modifying `div_en` or `div_val` while `timer_en` is High triggers an APB error response (`tim_pslverr`).
+
+| Bits | Name | Type | Reset Value | Description |
+| :---: | :---: | :---: | :---: | :--- |
+| 31:12 | Reserved | RO | `20'h0` | Reserved, read as zero. |
+| 11:8 | `div_val` | RW | `4'b0001` | **Counter Prescaler Selector**:<br>• `4'b0000`: Speed divided by 1<br>• `4'b0001`: Speed divided by 2 (default)<br>• `4'b0010`: Speed divided by 4<br>• `4'b0011`: Speed divided by 8<br>• `4'b0100`: Speed divided by 16<br>• `4'b0101`: Speed divided by 32<br>• `4'b0110`: Speed divided by 64<br>• `4'b0111`: Speed divided by 128<br>• `4'b1000`: Speed divided by 256<br>• *Others (`4'b1001`-`4'b1111`)*: **Prohibited settings**. |
+| 7:2 | Reserved | RO | `6'b0` | Reserved, read as zero. |
+| 1 | `div_en` | RW | `1'b0` | **Counter Control Mode Enable**:<br>• `0`: Disabled (counts at system clock speed).<br>• `1`: Enabled (counting speed controlled by `div_val`). |
+| 0 | `timer_en` | RW | `1'b0` | **Timer Enable**:<br>• `0`: Disabled (does not count).<br>• `1`: Enabled (starts counting).<br>*Advanced:* High-to-Low ($1 \rightarrow 0$) transition clears `{TDR1, TDR0}` to initial value (`64'h0`). |
+
+---
 
 ### 2. TDR0 & TDR1 - Timer Data Registers (`0x04`, `0x08`)
-* **TDR0 (`0x04`):** Read/Write lower 32 bits of 64-bit counter. Default: `32'h0000_0000`.
-* **TDR1 (`0x08`):** Read/Write upper 32 bits of 64-bit counter. Default: `32'h0000_0000`.
-* Both registers reset to zero when `timer_en` transitions High-to-Low.
+
+| Address | Bits | Name | Type | Reset Value | Description |
+| :---: | :---: | :---: | :---: | :---: | :--- |
+| `0x04` | 31:0 | `TDR0` | RW | `32'h0000_0000` | Lower 32-bit of 64-bit counter. |
+| `0x08` | 31:0 | `TDR1` | RW | `32'h0000_0000` | Upper 32-bit of 64-bit counter. |
+
+* **Auto-Clear (Advanced Level):** Values of `TDR0` and `TDR1` are cleared back to `32'h0000_0000` when `timer_en` changes from High-to-Low ($1 \rightarrow 0$).
+
+---
 
 ### 3. TCMP0 & TCMP1 - Timer Compare Registers (`0x0C`, `0x10`)
-* **TCMP0 (`0x0C`):** Lower 32 bits of compare match value. Default: `32'hFFFF_FFFF`.
-* **TCMP1 (`0x10`):** Upper 32 bits of compare match value. Default: `32'hFFFF_FFFF`.
-* When `{TDR1, TDR0} == {TCMP1, TCMP0}`, the interrupt pending bit (`TISR.int_st`) is set.
+
+| Address | Bits | Name | Type | Reset Value | Description |
+| :---: | :---: | :---: | :---: | :---: | :--- |
+| `0x0C` | 31:0 | `TCMP0` | RW | `32'hFFFF_FFFF` | Lower 32-bit of 64-bit compare match value. |
+| `0x10` | 31:0 | `TCMP1` | RW | `32'hFFFF_FFFF` | Upper 32-bit of 64-bit compare match value. |
+
+* **Interrupt Trigger:** Timer interrupt is asserted when `{TDR1, TDR0} == {TCMP1, TCMP0}`.
+
+---
 
 ### 4. TIER - Timer Interrupt Enable Register (`0x14`)
-* **Bit [0] (`int_en`, RW, default: `1'b0`):**
-  * `0`: Interrupt output masked (`tim_int = 0`).
-  * `1`: Interrupt output enabled when trigger condition is met.
+
+| Bits | Name | Type | Reset Value | Description |
+| :---: | :---: | :---: | :---: | :--- |
+| 31:1 | Reserved | RO | `31'h0` | Reserved, read as zero. |
+| 0 | `int_en` | RW | `1'b0` | **Timer Interrupt Enable**:<br>• `0`: Disabled (`tim_int` masked to 0).<br>• `1`: Enabled (`tim_int` output when trigger condition met).<br>*Note:* Clearing to `0` masks `tim_int` but does not clear `TISR.int_st`. |
+
+---
 
 ### 5. TISR - Timer Interrupt Status Register (`0x18`)
-* **Bit [0] (`int_st`, RW1C, default: `1'b0`):** Interrupt status. Writes `1` to clear. Counter continues normal operation after assertion.
+
+| Bits | Name | Type | Reset Value | Description |
+| :---: | :---: | :---: | :---: | :--- |
+| 31:1 | Reserved | RO | `31'h0` | Reserved, read as zero. |
+| 0 | `int_st` | RW1C | `1'b0` | **Timer Interrupt Pending Status**:<br>• `0`: No interrupt trigger condition.<br>• `1`: Trigger condition occurred.<br>*Note:* Write `1` to clear. Writing `0` has no effect. Counter continues normal operation after assertion. |
+
+---
 
 ### 6. THCSR - Timer Halt Control Status Register (`0x1C`)
-* **Bit [0] (`halt_req`, RW, default: `1'b0`):** Request timer halt in debug mode.
-* **Bit [1] (`halt_ack`, RO, default: `1'b0`):** Acknowledge status. Set to `1` when `dbg_mode` is High and `halt_req` is `1`.
+
+| Bits | Name | Type | Reset Value | Description |
+| :---: | :---: | :---: | :---: | :--- |
+| 31:2 | Reserved | RO | `30'h0` | Reserved, read as zero. |
+| 1 | `halt_ack` | RO | `1'b0` | **Timer Halt Acknowledge Status (Advanced Level)**:<br>• `0`: Timer is NOT halted.<br>• `1`: Timer is halted.<br>Set to `1` when `dbg_mode == 1` and `halt_req == 1`. |
+| 0 | `halt_req` | RW | `1'b0` | **Timer Halt Request (Advanced Level)**:<br>• `0`: No halt request.<br>• `1`: Request timer to halt. |
+
+---
+
+## Hardware Error Protection Rules (Advanced Level)
+
+An APB error response (`tim_pslverr = 1`) is generated, and **write data is blocked (not written into registers)** when:
+1. Writing prohibited values (`4'b1001` to `4'b1111`) to `TCR.div_val`.
+2. Attempting to modify `TCR.div_en` or `TCR.div_val` while `timer_en` is active (`1`).
 
 ---
 
@@ -109,17 +148,16 @@ Base address offset space: 12-bit (`0x000` - `0xFFF`). Reserved registers read a
 | `sys_clk` | 1 | Input | System Clock |
 | `sys_rst_n` | 1 | Input | Active-Low Asynchronous Reset |
 | `tim_psel` | 1 | Input | APB Select Signal |
-| `tim_pwrite` | 1 | Input | APB Write Control |
+| `tim_pwrite` | 1 | Input | APB Write Control Signal |
 | `tim_penable` | 1 | Input | APB Enable Signal |
-| `tim_paddr` | 12 | Input | APB Address Bus (12-bit) |
-| `tim_pwdata` | 32 | Input | APB Write Data Bus |
-| `tim_prdata` | 32 | Output | APB Read Data Bus |
-| `tim_pstrb` | 4 | Input | APB Byte Strobe / Write Enable |
-| `tim_pready` | 1 | Output | APB Ready Signal (1-cycle delay support) |
+| `tim_paddr[11:0]` | 12 | Input | APB Address Bus |
+| `tim_pwdata[31:0]` | 32 | Input | APB Write Data Bus |
+| `tim_prdata[31:0]` | 32 | Output | APB Read Data Bus |
+| `tim_pstrb[3:0]` | 4 | Input | APB Byte Strobe (Byte-wise write enable) |
+| `tim_pready` | 1 | Output | APB Ready Signal (1-cycle wait state support) |
 | `tim_pslverr` | 1 | Output | APB Error Response Signal |
 | `tim_int` | 1 | Output | Active-High Level Interrupt Output |
-| `dbg_mode` | 1 | Input | Debug Mode Input Signal |
-
+| `dbg_mode` | 1 | Input | Debug Mode Input Signal (Does not change after `timer_en` is High) |
 ---
 
 ## Author
