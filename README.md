@@ -25,8 +25,6 @@ This repository contains a 64-bit Timer IP Core with APB Slave interface, custom
 * **Counting Speed:** Controlled via `TCR.div_en` and `TCR.div_val`. 
   > **Note:** `div_en` and `div_val` do NOT act as a standard hardware clock frequency divider. They only control the rate/enable condition at which the counter increments.
 
----
-
 ### Debug & Halted Mode (Advanced Level)
 * **Halt Conditions:** The counter is suspended (halted) when **BOTH** conditions are met:
   1. Input signal `dbg_mode` is HIGH (`1`).
@@ -34,6 +32,21 @@ This repository contains a 64-bit Timer IP Core with APB Slave interface, custom
 * **Halt Acknowledge:** `THCSR.halt_ack` is automatically driven to HIGH (`1`) once the halt request is accepted.
 * **Resume Operation:** Clearing `THCSR.halt_req` to `0` resumes counting. The timing period for each count step remains unchanged across halt/resume events (as shown in the functional waveform).
 
+### Counting Modes & Clock Division
+* **Default Mode (`div_en = 0`):** Counter increments every system clock cycle (`div_val = 0`).
+* **Prescaled Mode (`div_en = 1`):** Counting speed is determined by `TCR.div_val[3:0]`:
+  * `div_val = 0`: Increment every 1 cycle
+  * `div_val = 1`: Increment every 2 cycles
+  * `div_val = 2`: Increment every 4 cycles
+  * `div_val = 3`: Increment every 8 cycles (up to divide-by-256 for `4'b1000`)
+
+---
+
+### Hardware Protection & Error Handling (Advanced Level)
+* **Configuration Lock:** Modifying `TCR.div_en` or `TCR.div_val` while `timer_en` is HIGH (`1`) is strictly prohibited.
+* **Error Response:** Any illegal write attempt to change prescaler settings while the timer is actively running will:
+  1. Trigger an APB slave error response (`tim_pslverr = 1`).
+  2. Block the invalid data from being written into the `TCR` register bitfields.
 ---
 
 ## Register Map Summary
