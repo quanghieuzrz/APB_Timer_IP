@@ -17,6 +17,25 @@ This repository contains a 64-bit Timer IP Core with APB Slave interface, custom
 
 ---
 
+## Detailed Functional Specification
+
+### Counter Operation
+* **64-bit Up-Counter:** Counts up continuously even when interrupts or counter overflows occur.
+* **Auto-Clear (Advanced Level):** When `timer_en` transitions from High to Low ($1 \rightarrow 0$), the counter value is automatically cleared to its initial value (`64'h0`). When re-enabled ($0 \rightarrow 1$), counting resumes normally.
+* **Counting Speed:** Controlled via `TCR.div_en` and `TCR.div_val`. 
+  > **Note:** `div_en` and `div_val` do NOT act as a standard hardware clock frequency divider. They only control the rate/enable condition at which the counter increments.
+
+---
+
+### Debug & Halted Mode (Advanced Level)
+* **Halt Conditions:** The counter is suspended (halted) when **BOTH** conditions are met:
+  1. Input signal `dbg_mode` is HIGH (`1`).
+  2. Control register bit `THCSR.halt_req` is set to HIGH (`1`).
+* **Halt Acknowledge:** `THCSR.halt_ack` is automatically driven to HIGH (`1`) once the halt request is accepted.
+* **Resume Operation:** Clearing `THCSR.halt_req` to `0` resumes counting. The timing period for each count step remains unchanged across halt/resume events (as shown in the functional waveform).
+
+---
+
 ## Register Map Summary
 
 Base address offset space: 12-bit (`0x000` - `0xFFF`). Reserved registers read as zero (RAZ) and write-ignored (WI).
