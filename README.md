@@ -10,6 +10,48 @@ This repository contains a 64-bit Timer IP Core with an APB4 Slave interface, cu
 
 ---
 
+## Project Structure
+
+```text
+APB_TIMER_IP/
+├── rtl/
+│   ├── apb.v
+│   ├── counter.v
+│   ├── counter_control.v
+│   ├── register.v
+│   └── timer_top.v
+│
+├── sim/
+│   ├── Makefile
+│   ├── compile.f
+│   ├── rtl.f
+│   ├── tb.f
+│   ├── wave.vcd
+│   └── *.log
+│
+├── tb/
+│   ├── test_bench.v
+│   └── testcase/
+│       ├── aligned.v
+│       ├── apb_multiple_access.v
+│       ├── apb_protocol.v
+│       ├── byte_access.v
+│       ├── counter_ctrl.v
+│       ├── counter.v
+│       ├── default.v
+│       ├── function.v
+│       ├── halt.v
+│       ├── interrupt.v
+│       ├── one_hot.v
+│       ├── pslverr.v
+│       ├── pstrb.v
+│       └── reserved.v
+│
+├── .gitignore
+└── README.md
+```
+---
+
 ## Key Features
 
 * **Bus Interface:** APB4 Slave interface with 12-bit address space (PSTRB required for byte access).
